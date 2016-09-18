@@ -1,0 +1,31 @@
+{
+  "name": "yavl",
+  "version": "0.0.1",
+  "description": "Yet Another Validation Language (for JavaScript)",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Framespaces/yavl.git"
+  },
+  "keywords": [
+    "schema",
+    "validation",
+    "types"
+  ],
+  "author": "dev@framespaces.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Framespaces/yavl/issues"
+  },
+  "homepage": "https://github.com/Framespaces/yavl#readme",
+  "dependencies": {
+    "lodash": "^4.15.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.0.2"
+  }
+}
