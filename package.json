@@ -2,6 +2,7 @@
   "name": "yavl",
   "version": "0.0.1",
   "description": "Yet Another Validation Language (for JavaScript)",
+  "keywords": ["validation", "validator", "schema", "joi", "jsonschema"],
   "main": "index.js",
   "scripts": {
     "test": "mocha test"
