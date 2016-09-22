@@ -40,10 +40,16 @@ as.check = function (check) {
       var then = arguments.length > 1 ? as.apply(null, [].slice.call(arguments, 1)) : null;
       function bindNamed(m) {
         return function (v) {
-          return (this[name] || (this[name] = then))[m].call(this, v);
+          this[name] = then;
+          return as[m].call(this, v); // Do not apply definition when defining
         }
       }
-      return check.and(as.check(wrapped(bindNamed)));
+      function applyNamed(m) {
+        return function (v) {
+          return this[name][m].call(this, v);
+        }
+      }
+      return check.and(as.check(wrapped(then ? bindNamed : applyNamed)));
     },
     or : function (what/*, ...*/) {
       var then = as.apply(null, arguments);
