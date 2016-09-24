@@ -20,7 +20,7 @@ describe('yavl arrays', function () {
     });
     it('should not match a wrongly-typed array of length > 0', function () {
       assert.isFalse(as([Number]).matches(['1']));
-      assert.isFalse(as([Number]).matches(['1', '2']));
+      assert.isFalse(as([Number]).matches([1, '2']));
     });
     it('should match a heterogeneous typed array of any length', function () {
       assert.isTrue(as([String, Number]).matches([]));

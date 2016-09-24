@@ -121,4 +121,30 @@ describe('yavl statics', function () {
       assert.throws(_.partial(as(String).validate, 1), TypeError);
     });
   });
+  describe('JSON', function () {
+    it('should match JSON', function () {
+      assert.isTrue(as(JSON).matches('"1"'));
+    });
+    it('should coerce JSON to itself', function () {
+      assert.equal(as(JSON).coerce('"1"'), '"1"');
+    });
+    it('should validate a string in JSON', function () {
+      assert.equal(as(JSON).validate('"1"'), '"1"');
+    });
+    it('should validate an object in JSON', function () {
+      assert.equal(as(JSON).validate('{"a":1}'), '{"a":1}');
+    });
+    it('should not match a number', function () {
+      assert.isFalse(as(JSON).matches(1));
+    });
+    it('should coerce a number', function () {
+      assert.deepEqual(as(JSON).coerce(1), '1');
+    });
+    it('should coerce an object', function () {
+      assert.deepEqual(as(JSON).coerce({ a : 1 }), '{"a":1}');
+    });
+    it('should not validate a number', function () {
+      assert.throws(_.partial(as(JSON).validate, 1), TypeError);
+    });
+  });
 });

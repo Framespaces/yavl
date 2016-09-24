@@ -2,7 +2,11 @@
   "name": "yavl",
   "version": "0.0.1",
   "description": "Yet Another Validation Language (for JavaScript)",
-  "keywords": ["validation", "validator", "schema", "joi", "jsonschema"],
+  "keywords": [
+    "schema",
+    "validation",
+    "types"
+  ],
   "main": "index.js",
   "scripts": {
     "test": "mocha test"
@@ -11,11 +15,6 @@
     "type": "git",
     "url": "git+https://github.com/Framespaces/yavl.git"
   },
-  "keywords": [
-    "schema",
-    "validation",
-    "types"
-  ],
   "author": "dev@framespaces.com",
   "license": "ISC",
   "bugs": {

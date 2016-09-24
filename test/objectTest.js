@@ -23,6 +23,12 @@ describe('yavl objects', function () {
       assert.isTrue(as({ a : String, b : Number }).matches({ a : '1', b : 2, c : 3 }));
       assert.isTrue(as({ a : String, b : Number }).matches({ a : '1', b : 2, c : '3' }));
     });
+    it('should match a deep object', function () {
+      assert.isTrue(as({ a : { b : Number } }).matches({ a : { b : 1 } }));
+    });
+    it('should not match a deeply unmatched object', function () {
+      assert.isFalse(as({ a : { b : Number } }).matches({ a : { b : '1' } }));
+    });
     it('should not match a wrongly-typed object of size > 0', function () {
       assert.isFalse(as({ a : Number }).matches({ a : '1' }));
       assert.isFalse(as({ a : Number }).matches({ a : '1', b : '2' }));
@@ -74,6 +80,9 @@ describe('yavl objects', function () {
     it('should validate a fixed-keys object', function () {
       assert.deepEqual(as({ a : Number, b : Error }).validate({ a : 1 }), { a : 1 });
       assert.throws(_.partial(as({ a : Number, b : Error }).validate, { a : 1, b : 2 }));
+    });
+    it('should not validate a deeply unmatched object', function () {
+      assert.throws(_.partial(as({ a : { b : Number } }).validate, { a : { b : '1' } }));
     });
   });
   describe('aggregating', function () {

@@ -71,8 +71,11 @@ describe('yavl operators', function () {
     it('should validate matching things shorthand', function () {
       assert.equal(as(/a/).validate('a'), 'a');
     });
-    it('should not match not matching things', function () {
+    it('should not match not matching things longhand', function () {
       assert.isFalse(as.regexp(/a/).matches('b'));
+    });
+    it('should not match not matching things shorthand', function () {
+      assert.isFalse(as(/a/).matches('b'));
     });
     it('should coerce not matching things to undefined', function () {
       assert.equal(as.regexp(/a/).coerce('b'), undefined);
