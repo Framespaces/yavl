@@ -1,5 +1,12 @@
 var _ = require('lodash');
 
+/**
+ * Main entry point for schema interpretation into a checker.
+ * Each passed argument represents a data type, which are logically OR-ed.
+ * @see https://github.com/Framespaces/yavl for the available data types and checker methods.
+ * @param what... the data types
+ * @return an interpreted schema checker with the methods: matches, coerce and validate
+ */
 var as = module.exports = function as(what/*, ...*/) {
   if (arguments.length > 0) {
     if (arguments.length === 1) {
@@ -21,6 +28,7 @@ function as1(what) {
   case String: return as.string;
   case Number: return as.number;
   case Date: return as.date;
+  case Function: return as.function();
   case JSON: return as.json;
   default:
     if (_.isArray(what)) {
@@ -35,6 +43,11 @@ function as1(what) {
   }
 }
 
+/**
+ * Utility function for custom matchers, particularly for wrapping the three schema checking methods.
+ * @param a function to indirectly create a checker method
+ * @return a checker with its methods implemented accordingly
+ */
 as.indirect = function (method) {
   return {
     matches : method('matches'),
@@ -43,10 +56,18 @@ as.indirect = function (method) {
   };
 }
 
+/**
+ * The as function itself is a checker
+ */
 as.matches = _.constant(true);
 as.coerce = _.identity;
 as.validate = _.identity;
 
+/**
+ * A statically-allocated hash of prototypical schema interpretation methods, which are generally
+ * available on every checker to refine the checking behaviour.
+ * To customise schema interpretation, modify this hash before using the as function.
+ */
 as.checks = {
   def : require('./check/def'),
   or : require('./check/or'),
@@ -61,29 +82,39 @@ _.each(['eq', 'lt', 'lte', 'gt', 'gte'], function (op) {
   as.checks[op] = require('./check/binary')(op);
 });
 
-function makeStatus(status) {
-  status || (status = {});
-  status.path || (status.path = []);
-  status.defs || (status.defs = {});
-  status.failures || (status.failures = []);
-  status.push || (status.push = function (name, keys) {
-    keys = _.compact(keys.concat(name));
-    status.path.push.apply(status.path, keys);
-    return keys.length;
-  });
-  status.pop || (status.pop = function (count) {
-    _.times(count, _.bind(status.path.pop, status.path));
-  });
-  status.failed || (status.failed = function () {
-    var path = status.path.join('.');
-    if (!_.some(status.failures, _.method('startsWith', path))) {
-      status.failures.push(path);
-    }
-    return path || 'any';
-  });
-  return status;
+/**
+ * Status reporting object. Pass a new one as the second argument to the coerce method
+ * to discover what went wrong with validation.
+ */
+as.Status = function () {
+  this.path = [];
+  this.defs = {};
+  this.failures = [];
 }
 
+as.Status.prototype.push = function (name, path) {
+  path = _.compact(path.concat(name));
+  this.path.push.apply(this.path, path);
+  return path.length;
+};
+
+as.Status.prototype.pop = function (count) {
+  _.times(count, _.bind(this.path.pop, this.path));
+};
+
+as.Status.prototype.failed = function () {
+  var path = this.path.join('.');
+  if (!_.some(this.failures, _.method('startsWith', path))) {
+    this.failures.push(path);
+  }
+  return path || 'any';
+};
+
+/**
+ * Utility method to hydrate a raw checker object (implementing matches, coerce and validate)
+ * with status handling and chaining methods. This function can be used in-line during data type
+ * creation, or as a utility when adding to as.checks.
+ */
 as.check = function (check, name) {
   // Entirely excusable sleight of hand to allow custom checkers
   check.__isChecker = true;
@@ -92,7 +123,7 @@ as.check = function (check, name) {
   return _.assign(check, as.indirect(function bindStatus(m) {
     var f = check[m];
     return function (value, status, key/*, ...*/) {
-      status = makeStatus(status);
+      status || (status = new as.Status());
       var count = status.push(name, _.slice(arguments, 2));
       try {
         var result = f(value, status);
@@ -107,12 +138,16 @@ as.check = function (check, name) {
   }), as.checks);
 }
 
+/**
+ * The static checker creation methods used to bootstrap a new data type declaration
+ */
 as.error = require('./check/static')('error', _.isUndefined, _.constant(undefined), 'Not allowed');
 as.object = require('./check/static')('object', _.isObject, Object, 'Not an object');
 as.array = require('./check/static')('array', _.isArray, _.castArray, 'Not an array');
 as.boolean = require('./check/static')('boolean', _.isBoolean, Boolean, 'Not a boolean');
 as.string = require('./check/static')('string', _.isString, String, 'Not a string');
 as.number = require('./check/static')('number', _.isNumber, Number, 'Not a number');
+as.function = require('./check/function');
 as.date = require('./check/static')('date', _.isDate, function (value) {
   // The Date constructor is not idempotent
   return _.isDate(value) ? value : new Date(value);
@@ -130,4 +165,7 @@ as.json = require('./check/static')('json', isJson, function (value) {
   return isJson(value) ? value : JSON.stringify(value);
 }, 'Not JSON');
 
+/**
+ * The as function itself is a checker
+ */
 as.check(as);
