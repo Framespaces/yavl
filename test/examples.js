@@ -29,20 +29,20 @@ describe('yavl examples', function () {
     assert.isTrue(as({
       id : /^[a-f0-9]{32}$/,
       type : as('addition', 'removal', 'update'),
-      shape : as.def('shape', {
+      shape : as.defined('shape', {
         name : as('polygon', 'polyline', 'line', 'rect', 'ellipse', 'circle', 'path'),
         attr : as({ undefined : as(String, Number) }).size(as.lte(10)),
         text : as(String).size(as.lte(1000)),
-        children : as([as.def('shape')]).or(undefined),
+        children : as([as.defined('shape')]).or(undefined),
         bbox : { x : Number, y : Number, width : Number, height : Number, undefined : Error },
         undefined : Error
-      }).def('shape')
+      })
     }).matches({
       id : 'df13fbb92b9d43a7b53339abfb912cb4',
       type : 'update',
       shape : {
         name : 'circle',
-        attr : { cx : 10, cy : 10, r : 10 },
+        attr : { id : 'theCircle', cx : 10, cy : 10, r : 10 },
         bbox : { x : 0, y : 0, width : 20, height : 10 }
       }
     }));

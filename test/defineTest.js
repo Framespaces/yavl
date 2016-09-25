@@ -4,17 +4,17 @@ var _ = require('lodash'),
 
 describe('yavl definitions', function () {
   it('should apply a trivial definition', function () {
-    assert.isTrue(as.def('number', Number).def('number').matches(1));
-    assert.isFalse(as.def('number', Number).def('number').matches('1'));
+    assert.isTrue(as.define('number', Number).defined('number').matches(1));
+    assert.isFalse(as.define('number', Number).defined('number').matches('1'));
   });
   it('should apply a deep definition', function () {
-    assert.isTrue(as.def('address', {
+    assert.isTrue(as.define('address', {
       name : String,
       code : /[A-Z]{2}[0-9]+[A-Z]?\s*[0-9]+[A-Z]{2}/
     }).and({
       firstName : String,
       lastName : String,
-      address : as.def('address')
+      address : as.defined('address')
     }).matches({
       firstName : 'Fred',
       lastName : 'Bloggs',
@@ -22,6 +22,13 @@ describe('yavl definitions', function () {
         name : '1',
         code : 'SW1A 2AA'
       }
+    }));
+  });
+  it('should recursively apply a definition', function () {
+    assert.isTrue(as.defined('group', {
+      members : [as(Number).or(as.defined('group'))]
+    }).matches({
+      members : [1, 2, { members : [3, 4] }]
     }));
   });
 });

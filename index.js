@@ -69,7 +69,8 @@ as.validate = _.identity;
  * To customise schema interpretation, modify this hash before using the as function.
  */
 as.checks = {
-  def : require('./check/def'),
+  define : require('./check/define'),
+  defined : require('./check/define').d,
   or : require('./check/or'),
   and : require('./check/and'),
   with : require('./check/with'),

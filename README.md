@@ -36,14 +36,14 @@ as(schema).validate({
 as({
   id : /^[a-f0-9]{32}$/,
   type : as('addition', 'removal', 'update'),
-  shape : as.def('shape', {
+  shape : as.defined('shape', {
     name : as('polygon', 'polyline', 'line', 'rect', 'ellipse', 'circle', 'path'),
     attr : as({ undefined : as(String, Number) }).size(as.lte(100)),
     text : as(String).size(as.lte(1000)),
-    children : as([as.def('shape')]).or(undefined),
+    children : as([as.defined('shape')]).or(undefined),
     bbox : { x : Number, y : Number, width : Number, height : Number, undefined : Error },
     undefined : Error
-  }).def('shape')
+  })
 }).matches({
   id : 'df13fbb92b9d43a7b53339abfb912cb4',
   type : 'update',
@@ -178,6 +178,21 @@ as.size(1, 2).matches(['a', 'b']);
 as.size(1, 2).matches(['a', 'b', 'c']) === false;
 ```
 
+## ✓ definitions
+Sometimes you want to define something for later.
+```javascript
+as.define('number', Number).defined('number').matches(1); // Not a particularly useful example
+```
+This is especially useful in recursion. Note that using `defined` with more than one argument will
+both create and apply the definition.
+```javascript
+assert.isTrue(as.defined('group', {
+  members : [as(Number).or(as.defined('group'))]
+}).matches({
+  members : [1, 2, { members : [3, 4] }]
+})); // That's better
+```
+
 ## ✓ functions
 You can check function parameters and return values using `as.function()` followed optionally by `returns`.
 However, since the checking only happens when you actually call the function, we need to use
@@ -200,5 +215,8 @@ as({ a : Number }).matches({ a : '1' }, status);
 ```
 
 ## ✓ alternatives
+OK let's face it, sometimes you just need something that's been around for a while.
+
 https://www.npmjs.com/package/joi
+
 http://json-schema.org/
