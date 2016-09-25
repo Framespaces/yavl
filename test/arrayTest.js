@@ -32,6 +32,7 @@ describe('yavl arrays', function () {
       assert.isFalse(as([String, Number]).matches([1]));
       assert.isFalse(as([String, Number]).matches([1, 2]));
       assert.isFalse(as([String, Number]).matches(['1', 2, '3']));
+      assert.isTrue(as([String, Number, as]).matches(['1', 2, '3', new Date]));
     });
     it('should not match a forced-empty array of length > 0', function () {
       assert.isFalse(as([Error]).matches([1]));
@@ -42,7 +43,7 @@ describe('yavl arrays', function () {
       assert.isFalse(as([Number, Error]).matches([1, 2]));
     });
   });
-  describe('coercing', function () {
+  describe('casting', function () {
     it('should cast any array to itself longhand', function () {
       assert.deepEqual(as.array.with([]).cast([]), []);
       assert.deepEqual(as.array.with([]).cast([1]), [1]);

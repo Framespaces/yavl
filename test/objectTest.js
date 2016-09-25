@@ -49,7 +49,7 @@ describe('yavl objects', function () {
       assert.isFalse(as({ a : Number, undefined : Number }).matches({ a : 1, b : '2' }));
     });
   });
-  describe('coercing', function () {
+  describe('casting', function () {
     it('should cast any object to itself longhand', function () {
       assert.deepEqual(as.object.with({}).cast({}), {});
       assert.deepEqual(as.object.with({}).cast({ a : 1 }), { a : 1 });

@@ -35,6 +35,7 @@ describe('yavl operators', function () {
   describe('ranges', function () {
     it('should match in-range things', function () {
       assert.isTrue(as.lte(1).matches(1));
+      assert.isTrue(as.gt(0).lt(10).matches(1));
     });
     it('should cast in-range things', function () {
       assert.equal(as.lte(1).cast(1), 1);

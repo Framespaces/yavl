@@ -4,7 +4,7 @@ var _ = require('lodash'),
 
 describe('yavl functions', function () {
   it('should match a function', function () {
-    assert.isTrue(as(Function).matches(_.noop));
+    assert.isTrue(as(Function).matches(function () {}));
   });
   it('should not match a number', function () {
     assert.isFalse(as(Function).matches(1));
@@ -19,7 +19,8 @@ describe('yavl functions', function () {
     assert.equal(as(Function).returns(Number).cast(_.constant('1'))(), 1);
   });
   it('should cast function parameters', function () {
-    assert.equal(as.function(Number).cast(_.identity)('1'), 1);
+    function addOne(n) { return n + 1; }
+    assert.equal(as.function(Number).cast(addOne)('1'), 2);
   });
   it('should not cast excess function parameters', function () {
     assert.equal(as.function(Number).cast(function (n, v) { return v; })(1, '2'), '2');

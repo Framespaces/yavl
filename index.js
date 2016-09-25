@@ -12,7 +12,7 @@ var as = module.exports = function as(what/*, ...*/) {
     if (arguments.length === 1) {
       return as1(what);
     } else {
-      return as1(arguments[0]).or([].slice.call(arguments, 1));
+      return as1(arguments[0]).or(as.apply(this, _.slice(arguments, 1)));
     }
   } else {
     return as;

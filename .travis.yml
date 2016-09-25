@@ -4,4 +4,7 @@ node_js:
   - "6"
   - "node"
 
+notifications:
+  slack: yavl:gA9j9Kth6Tb4aT70LIx92TBE
+
 sudo: false

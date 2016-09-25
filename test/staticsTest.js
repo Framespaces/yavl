@@ -7,6 +7,8 @@ describe('yavl statics', function () {
     it('should match anything', function () {
       assert.isTrue(as.matches(1));
       assert.isTrue(as.matches('1'));
+      assert.isTrue(as.matches({}));
+      assert.isTrue(as.matches(undefined));
     });
     it('should cast everything to itself', function () {
       assert.equal(as.cast('1'), '1');
@@ -21,6 +23,8 @@ describe('yavl statics', function () {
   });
   describe('error', function () {
     it('should not match anything', function () {
+      assert.isTrue(as(Error).matches());
+      assert.isTrue(as(Error).matches(undefined));
       assert.isFalse(as(Error).matches(1));
       assert.isFalse(as(Error).matches('1'));
     });
@@ -123,6 +127,11 @@ describe('yavl statics', function () {
     });
     it('should not validate a number', function () {
       assert.throws(_.partial(as(String).validate, 1), TypeError);
+    });
+  });
+  describe('Date', function () {
+    it('should match a Date', function () {
+      assert.isTrue(as(Date).matches(new Date));
     });
   });
   describe('JSON', function () {

@@ -20,7 +20,7 @@ describe('yavl logic operators', function () {
       assert.equal(as(Number).and(1).validate(1), 1);
     });
   });
-  describe('or', function () {
+  describe('or (longhand)', function () {
     it('should match if both arguments do', function () {
       assert.isTrue(as(Number).or(1).matches(1));
     });
@@ -40,6 +40,27 @@ describe('yavl logic operators', function () {
     it('should validate against either argument', function () {
       assert.equal(as(Number).or(2).validate(1), 1);
       assert.equal(as(String).or(1).validate(1), 1);
+    });
+  });
+  describe('or (shorthand)', function () {
+    it('should match if both arguments do', function () {
+      assert.isTrue(as(Number, 1).matches(1));
+    });
+    it('should match either argument', function () {
+      assert.isTrue(as(Number, 2).matches(1));
+      assert.isTrue(as(String, 1).matches(1));
+    });
+    it('should match any argument', function () {
+      assert.isTrue(as(Number, Boolean, '1').matches(1));
+      assert.isTrue(as(Number, Boolean, '1').matches(true));
+      assert.isTrue(as(Number, Boolean, '1').matches('1'));
+      assert.isTrue(as('1', '2', '3').matches('1'));
+      assert.isTrue(as('1', '2', '3').matches('2'));
+      assert.isTrue(as('1', '2', '3').matches('3'));
+      assert.isFalse(as('1', '2', '3').matches('4'));
+    });
+    it('should not match if neither argument does', function () {
+      assert.isFalse(as(String, 2).matches(1));
     });
   });
 });
