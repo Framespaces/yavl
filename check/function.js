@@ -13,8 +13,8 @@ module.exports = function (what/*, ...*/) {
   }
   return as.check({
     matches : _.isFunction,
-    coerce : function (value) {
-      return decorate(value, 'coerce');
+    cast : function (value) {
+      return decorate(value, 'cast');
     },
     validate : function (value) {
       if (!_.isFunction(value)) throw new TypeError('Not a function: ' + value);

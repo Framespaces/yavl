@@ -1,10 +1,10 @@
 var _ = require('lodash'),
     as = require('../index');
 
-module.exports = function (name, matches, coerce, error) {
+module.exports = function (name, matches, cast, error) {
   return as.check({
     matches : matches,
-    coerce : coerce,
+    cast : cast,
     validate : function (value) {
       if (!matches(value)) throw new TypeError(error + ': ' + value);
       return value;

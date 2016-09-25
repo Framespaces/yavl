@@ -5,10 +5,10 @@ module.exports = function (what/*, ...*/) {
   return as.check({
     matches : function (value, status) {
       return left.matches(value, status) &&
-        right.matches(left.coerce(value, status), status, left.name);
+        right.matches(left.cast(value, status), status, left.name);
     },
-    coerce : function (value, status) {
-      return right.coerce(left.coerce(value, status), status, left.name);
+    cast : function (value, status) {
+      return right.cast(left.cast(value, status), status, left.name);
     },
     validate : function (value, status) {
       return right.validate(left.validate(value, status), status, left.name);

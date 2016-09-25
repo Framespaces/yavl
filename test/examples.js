@@ -14,7 +14,7 @@ describe('yavl examples', function () {
       age : 40
     }));
 
-    assert.deepEqual(schema.coerce({
+    assert.deepEqual(schema.cast({
       name : 'Fred',
       age : '40'
     }), { name : 'Fred', age : 40 });

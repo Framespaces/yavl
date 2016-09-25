@@ -6,29 +6,29 @@ module.exports = function (op) {
     var left = this, right = as.apply(null, arguments), branched = arguments.length;
     return as.check({
       matches : function (value, status) {
-        return right.matches(_[op](left.coerce(value, status)));
+        return right.matches(_[op](left.cast(value, status)));
       },
-      coerce : function (value, status) {
-        var coerced = _[op](left.coerce(value, status));
+      cast : function (value, status) {
+        var casted = _[op](left.cast(value, status));
         if (branched) {
-          coerced = right.coerce(coerced);
+          casted = right.cast(casted);
           switch (op) {
           case 'size':
-            if (_.isArray(value)) return _.set(value, 'length', coerced);
-            if (_.isString(value)) return value.slice(0, coerced);
+            if (_.isArray(value)) return _.set(value, 'length', casted);
+            if (_.isString(value)) return value.slice(0, casted);
             return undefined;
-          case 'first': return _.set(value, 0, coerced);
-          case 'last': return _.set(value, value.length - 1, coerced);
+          case 'first': return _.set(value, 0, casted);
+          case 'last': return _.set(value, value.length - 1, casted);
           default: return undefined; // TODO: could be improved
           }
         } else {
-          return coerced;
+          return casted;
         }
       },
       validate : function (value, status) {
-        var valid = left.validate(value, status), coerced = _[op](valid);
-        right.validate(coerced, status);
-        return branched ? valid : coerced;
+        var valid = left.validate(value, status), casted = _[op](valid);
+        right.validate(casted, status);
+        return branched ? valid : casted;
       }
     }, op);
   };

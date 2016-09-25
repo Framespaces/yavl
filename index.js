@@ -5,7 +5,7 @@ var _ = require('lodash');
  * Each passed argument represents a data type, which are logically OR-ed.
  * @see https://github.com/Framespaces/yavl for the available data types and checker methods.
  * @param what... the data types
- * @return an interpreted schema checker with the methods: matches, coerce and validate
+ * @return an interpreted schema checker with the methods: matches, cast and validate
  */
 var as = module.exports = function as(what/*, ...*/) {
   if (arguments.length > 0) {
@@ -51,7 +51,7 @@ function as1(what) {
 as.indirect = function (method) {
   return {
     matches : method('matches'),
-    coerce : method('coerce'),
+    cast : method('cast'),
     validate : method('validate')
   };
 }
@@ -60,7 +60,7 @@ as.indirect = function (method) {
  * The as function itself is a checker
  */
 as.matches = _.constant(true);
-as.coerce = _.identity;
+as.cast = _.identity;
 as.validate = _.identity;
 
 /**
@@ -83,7 +83,7 @@ _.each(['eq', 'lt', 'lte', 'gt', 'gte'], function (op) {
 });
 
 /**
- * Status reporting object. Pass a new one as the second argument to the coerce method
+ * Status reporting object. Pass a new one as the second argument to the cast method
  * to discover what went wrong with validation.
  */
 as.Status = function () {
@@ -111,7 +111,7 @@ as.Status.prototype.failed = function () {
 };
 
 /**
- * Utility method to hydrate a raw checker object (implementing matches, coerce and validate)
+ * Utility method to hydrate a raw checker object (implementing matches, cast and validate)
  * with status handling and chaining methods. This function can be used in-line during data type
  * creation, or as a utility when adding to as.checks.
  */
@@ -145,7 +145,10 @@ as.error = require('./check/static')('error', _.isUndefined, _.constant(undefine
 as.object = require('./check/static')('object', _.isObject, Object, 'Not an object');
 as.array = require('./check/static')('array', _.isArray, _.castArray, 'Not an array');
 as.boolean = require('./check/static')('boolean', _.isBoolean, Boolean, 'Not a boolean');
-as.string = require('./check/static')('string', _.isString, String, 'Not a string');
+as.string = require('./check/static')('string', _.isString, function (value) {
+  // Stringification of null and undefined is not pleasant
+  return _.isUndefined(value) || _.isNull(value) ? '' : String(value);
+}, 'Not a string');
 as.number = require('./check/static')('number', _.isNumber, Number, 'Not a number');
 as.function = require('./check/function');
 as.date = require('./check/static')('date', _.isDate, function (value) {

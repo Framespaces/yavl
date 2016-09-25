@@ -50,26 +50,26 @@ describe('yavl objects', function () {
     });
   });
   describe('coercing', function () {
-    it('should coerce any object to itself longhand', function () {
-      assert.deepEqual(as.object.with({}).coerce({}), {});
-      assert.deepEqual(as.object.with({}).coerce({ a : 1 }), { a : 1 });
+    it('should cast any object to itself longhand', function () {
+      assert.deepEqual(as.object.with({}).cast({}), {});
+      assert.deepEqual(as.object.with({}).cast({ a : 1 }), { a : 1 });
     });
-    it('should coerce any object to itself with an empty object shorthand', function () {
-      assert.deepEqual(as({}).coerce({}), {});
-      assert.deepEqual(as({}).coerce({ a : 1 }), { a : 1 });
+    it('should cast any object to itself with an empty object shorthand', function () {
+      assert.deepEqual(as({}).cast({}), {});
+      assert.deepEqual(as({}).cast({ a : 1 }), { a : 1 });
     });
     // From now on, just using shorthand (as for typical clients)
-    it('should coerce a heterogeneous typed object', function () {
-      assert.deepEqual(as({ a : String, b : Number }).coerce({ a : 1, b : 2 }), { a : '1', b : 2 });
-      assert.deepEqual(as({ a : String, b : Number }).coerce({ a : 1, b : 2, c : '3' }), { a : '1', b : 2, c : '3' });
+    it('should cast a heterogeneous typed object', function () {
+      assert.deepEqual(as({ a : String, b : Number }).cast({ a : 1, b : 2 }), { a : '1', b : 2 });
+      assert.deepEqual(as({ a : String, b : Number }).cast({ a : 1, b : 2, c : '3' }), { a : '1', b : 2, c : '3' });
     });
-    it('should coerce a forced-empty object to empty', function () {
-      assert.deepEqual(as({ a : Error }).coerce({ a : 1 }), {});
-      assert.deepEqual(as({ undefined : Error }).coerce({ a : 1, b : 2 }), {});
+    it('should cast a forced-empty object to empty', function () {
+      assert.deepEqual(as({ a : Error }).cast({ a : 1 }), {});
+      assert.deepEqual(as({ undefined : Error }).cast({ a : 1, b : 2 }), {});
     });
     it('should truncate to a fixed-keys object', function () {
-      assert.deepEqual(as({ a : Number, b : Error }).coerce({ a : 1 }), { a : 1 });
-      assert.deepEqual(as({ a : Number, b : Error }).coerce({ a : 1, b : 2 }), { a : 1 });
+      assert.deepEqual(as({ a : Number, b : Error }).cast({ a : 1 }), { a : 1 });
+      assert.deepEqual(as({ a : Number, b : Error }).cast({ a : 1, b : 2 }), { a : 1 });
     });
   });
   describe('validating', function () {
@@ -91,14 +91,14 @@ describe('yavl objects', function () {
       assert.isTrue(as.size(1).matches({ a : 1 }));
       assert.isFalse(as.size(1).matches({}));
     });
-    it('should coerce a size to a number if no-args', function () {
-      assert.equal(as.size().coerce({ a : 2 }), 1);
+    it('should cast a size to a number if no-args', function () {
+      assert.equal(as.size().cast({ a : 2 }), 1);
     });
     it('should undefine an object if branched', function () {
-      assert.equal(as.size(as.eq(1)).coerce({ a : 1, b : 2 }), undefined);
+      assert.equal(as.size(as.eq(1)).cast({ a : 1, b : 2 }), undefined);
     });
     it('should undefine an object if implicitly branched', function () {
-      assert.equal(as.size(1).coerce({ a : 1, b : 2 }), undefined);
+      assert.equal(as.size(1).cast({ a : 1, b : 2 }), undefined);
     });
     it('should match a size less than, by no-args', function () {
       assert.isTrue(as.size().lt(1).matches({}));

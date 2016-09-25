@@ -10,7 +10,7 @@ module.exports = function (whats) {
       return _.has(ass, k) ? ass[k] : _.isArray(whats) ? _.last(ass) : (ass['undefined'] || as);
     }
     function keys(value) {
-      return _.isArray(value) ? _.keys(value) : _.uniq(_.keys(value).concat(_.without(_.keys(ass), 'undefined')));
+      return _.uniq(_.keys(value).concat(_.without(_.keys(ass), 'undefined')));
     }
     return this.and(as.check({
       matches : function (value, status) {
@@ -18,10 +18,10 @@ module.exports = function (whats) {
           return what(k).matches(value[k], status, k);
         }, this));
       },
-      coerce : function (value, status) {
+      cast : function (value, status) {
         return _.reduce(keys(value), _.bind(function (value, k) {
-          var coerced = what(k).coerce(value[k], status, k);
-          return _.isUndefined(coerced) ? _.unset(value, k) && value : _.set(value, k, coerced);
+          var casted = what(k).cast(value[k], status, k);
+          return _.isUndefined(casted) ? _.unset(value, k) && value : _.set(value, k, casted);
         }, this), value);
       },
       validate : function (value, status) {

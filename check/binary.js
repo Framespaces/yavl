@@ -6,10 +6,10 @@ module.exports = function (op) {
     var left = this;
     return as.check({
       matches : function (value, status) {
-        return _[op](left.coerce(value, status), expected);
+        return _[op](left.cast(value, status), expected);
       },
-      coerce : function (value, status) {
-        value = left.coerce(value, status);
+      cast : function (value, status) {
+        value = left.cast(value, status);
         return _[op](value, expected) ? value : expected; // TODO: Incorrect for gte and lte
       },
       validate : function (value, status) {

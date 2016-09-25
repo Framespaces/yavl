@@ -9,20 +9,20 @@ describe('yavl functions', function () {
   it('should not match a number', function () {
     assert.isFalse(as(Function).matches(1));
   });
-  it('should coerce to a function', function () {
-    assert.isTrue(_.isFunction(as(Function).coerce(1)));
+  it('should cast to a function', function () {
+    assert.isTrue(_.isFunction(as(Function).cast(1)));
   });
   it('should validate a function', function () {
     assert.isTrue(_.isFunction(as(Function).validate(_.noop)));
   });
-  it('should coerce function return', function () {
-    assert.equal(as(Function).returns(Number).coerce(_.constant('1'))(), 1);
+  it('should cast function return', function () {
+    assert.equal(as(Function).returns(Number).cast(_.constant('1'))(), 1);
   });
-  it('should coerce function parameters', function () {
-    assert.equal(as.function(Number).coerce(_.identity)('1'), 1);
+  it('should cast function parameters', function () {
+    assert.equal(as.function(Number).cast(_.identity)('1'), 1);
   });
-  it('should not coerce excess function parameters', function () {
-    assert.equal(as.function(Number).coerce(function (n, v) { return v; })(1, '2'), '2');
+  it('should not cast excess function parameters', function () {
+    assert.equal(as.function(Number).cast(function (n, v) { return v; })(1, '2'), '2');
   });
   it('should validate function parameters', function () {
     assert.equal(as.function(Number).validate(_.identity)(1), 1);

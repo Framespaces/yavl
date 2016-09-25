@@ -16,7 +16,7 @@ schema.matches({
   age : 40
 }); // => true
 
-schema.coerce({
+schema.cast({
   name : 'Fred',
   age : '40'
 }); // => { name : 'Fred', age : 40 }
