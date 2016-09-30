@@ -10,7 +10,7 @@ module.exports = function (what/*, ...*/) {
       return left.matches(value, status) ? left.cast(value, status) : right.cast(value, status);
     },
     validate : function (value, status) {
-      return left.matches(value, status) ? left.validate(value, status) : right.validate(value, status);
+      return left.matches(value, status) ? value : right.validate(value, status);
     }
   });
 };

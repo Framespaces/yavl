@@ -67,7 +67,7 @@ Schemas can be hashes (as above), arrays, or a selection of JavaScript global ob
 ```javascript
 as(Number).matches(1);
 as(String).matches('1');
-as(Boolean).matches('1');
+as(Boolean).matches(true);
 as(Date).matches(new Date);
 as(Object).matches({});
 as(Array).matches([]);

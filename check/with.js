@@ -25,10 +25,10 @@ module.exports = function (whats) {
         }, this), value);
       },
       validate : function (value, status) {
-        return _.reduce(keys(value), _.bind(function (value, k) {
-          var valid = what(k).validate(value[k], status, k);
-          return _.isUndefined(valid) ? _.unset(value, k) && value : _.set(value, k, valid);
-        }, this), value);
+        _.each(keys(value), _.bind(function (k) {
+          what(k).validate(value[k], status, k);
+        }, this));
+        return value;
       }
     }));
   }

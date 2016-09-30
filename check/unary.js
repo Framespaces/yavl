@@ -2,6 +2,17 @@ var _ = require('lodash'),
     as = require('../index');
 
 module.exports = function (op) {
+  function apply(value, result) {
+    switch (op) {
+    case 'size':
+      if (_.isArray(value)) return _.set(value, 'length', result);
+      if (_.isString(value)) return value.slice(0, result);
+      return undefined;
+    case 'first': return _.set(value, 0, result);
+    case 'last': return _.set(value, value.length - 1, result);
+    default: return undefined; // TODO: could be improved
+    }
+  }
   return function (what/*, ...*/) {
     var left = this, right = as.apply(null, arguments), branched = arguments.length;
     return as.check({
@@ -11,16 +22,7 @@ module.exports = function (op) {
       cast : function (value, status) {
         var casted = _[op](left.cast(value, status));
         if (branched) {
-          casted = right.cast(casted);
-          switch (op) {
-          case 'size':
-            if (_.isArray(value)) return _.set(value, 'length', casted);
-            if (_.isString(value)) return value.slice(0, casted);
-            return undefined;
-          case 'first': return _.set(value, 0, casted);
-          case 'last': return _.set(value, value.length - 1, casted);
-          default: return undefined; // TODO: could be improved
-          }
+          return apply(value, right.cast(casted));
         } else {
           return casted;
         }
