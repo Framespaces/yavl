@@ -64,26 +64,6 @@ as.cast = _.identity;
 as.validate = _.identity;
 
 /**
- * A statically-allocated hash of prototypical schema interpretation methods, which are generally
- * available on every checker to refine the checking behaviour.
- * To customise schema interpretation, modify this hash before using the as function.
- */
-as.checks = {
-  define : require('./check/define'),
-  defined : require('./check/define').d,
-  or : require('./check/or'),
-  and : require('./check/and'),
-  with : require('./check/with'),
-  regexp : require('./check/regexp')
-};
-_.each(['size', 'first', 'last', 'ceil', 'floor', 'max', 'mean', 'min', 'sum'], function (unary) {
-  as.checks[unary] = require('./check/unary')(unary);
-});
-_.each(['eq', 'lt', 'lte', 'gt', 'gte'], function (op) {
-  as.checks[op] = require('./check/binary')(op);
-});
-
-/**
  * Status reporting object. Pass a new one as the second argument to the cast method
  * to discover what went wrong with validation.
  */
@@ -111,10 +91,13 @@ as.Status.prototype.failed = function () {
   return path || 'any';
 };
 
+// NOTE deferred initialisation due to circular dependencies
+var checks = require('./checks');
+
 /**
  * Utility method to hydrate a raw checker object (implementing matches, cast and validate)
  * with status handling and chaining methods. This function can be used in-line during data type
- * creation, or as a utility when adding to as.checks.
+ * creation, or as a utility when extending as.
  */
 as.check = function (check, name) {
   // Entirely excusable sleight of hand to allow custom checkers
@@ -136,26 +119,8 @@ as.check = function (check, name) {
         status.pop(count);
       }
     }
-  }), as.checks);
-}
-
-/**
- * The static checker creation methods used to bootstrap a new data type declaration
- */
-as.error = require('./check/static')('error', _.isUndefined, _.constant(undefined), 'Not allowed');
-as.object = require('./check/static')('object', _.isObject, Object, 'Not an object');
-as.array = require('./check/static')('array', _.isArray, _.castArray, 'Not an array');
-as.boolean = require('./check/static')('boolean', _.isBoolean, Boolean, 'Not a boolean');
-as.string = require('./check/static')('string', _.isString, function (value) {
-  // Stringification of null and undefined is not pleasant
-  return _.isUndefined(value) || _.isNull(value) ? '' : String(value);
-}, 'Not a string');
-as.number = require('./check/static')('number', _.isNumber, Number, 'Not a number');
-as.function = require('./check/function');
-as.date = require('./check/static')('date', _.isDate, function (value) {
-  // The Date constructor is not idempotent
-  return _.isDate(value) ? value : new Date(value);
-}, 'Not a date');
+  }), checks);
+};
 
 function isJson(value) {
   try {
@@ -164,10 +129,41 @@ function isJson(value) {
     return false;
   }
 }
-as.json = require('./check/static')('json', isJson, function (value) {
-  // JSON.stringify is not idempotent
-  return isJson(value) ? value : JSON.stringify(value);
-}, 'Not JSON');
+
+/**
+ * The static checker creation methods used to bootstrap a new data type declaration.
+ * NOTE deferred initialisation due to circular dependencies
+ */
+var staticCheck = require('./checks/static'), functionCheck = require('./checks/function');
+var statics = {
+  error : staticCheck('error', _.isUndefined, _.constant(undefined), 'Not allowed'),
+  object : staticCheck('object', _.isObject, Object, 'Not an object'),
+  array : staticCheck('array', _.isArray, _.castArray, 'Not an array'),
+  boolean : staticCheck('boolean', _.isBoolean, Boolean, 'Not a boolean'),
+  string : staticCheck('string', _.isString, function (value) {
+    // Stringification of null and undefined is not pleasant
+    return _.isUndefined(value) || _.isNull(value) ? '' : String(value);
+  }, 'Not a string'),
+  number : staticCheck('number', _.isNumber, Number, 'Not a number'),
+  function : functionCheck,
+  date : staticCheck('date', _.isDate, function (value) {
+    // The Date constructor is not idempotent
+    return _.isDate(value) ? value : new Date(value);
+  }, 'Not a date'),
+  json : staticCheck('json', isJson, function (value) {
+    // JSON.stringify is not idempotent
+    return isJson(value) ? value : JSON.stringify(value);
+  }, 'Not JSON')
+};
+as = _.assign(as, statics);
+
+as.extend = function (customChecks) {
+  // Brute force for now - assign custom checks to instance methods, ourself and statics
+  checks = _.assign(checks, customChecks);
+  return _.assign(as, _.mapValues(statics, function (check) {
+    return _.assign(check, customChecks);
+  }), customChecks);
+};
 
 /**
  * The as function itself is a checker

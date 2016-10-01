@@ -31,6 +31,21 @@ as(schema).validate({
 }); // => throws TypeError
 ```
 
+## [<img src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png" width="40" height="40" /> feedback and contributions welcome](https://github.com/Framespaces/yavl/issues)
+
+- [let's get crazy](#-lets-get-crazy)
+- [basically](#-basically)
+- [types](#-types)
+- [literals and logic](#-literals-and-logic)
+- [objects](#-objects)
+- [arrays](#-arrays)
+- [operators](#-operators)
+- [aggregations](#-aggregations)
+- [definitions](#-definitions)
+- [functions](#-functions)
+- [getting feedback](#-getting-feedback)
+- [alternatives](#-alternatives)
+
 ## ✓ let's get crazy
 ```javascript
 as({
@@ -55,7 +70,7 @@ as({
 }); // => true
 ```
 
-## ✓ so, basically
+## ✓ basically
 The function returned from `require('yavl')` (we'll label it `as` from now on) transforms a _schema_ into a _checker_ for that schema. A checker has the three methods we've seen above:
 * `matches(value)` returns `true` if the value matches the schema
 * `cast(value)` does its best to cast the value to something matching the schema
