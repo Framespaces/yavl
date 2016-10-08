@@ -1,16 +1,28 @@
-var _ = require('lodash');
+var _ = require('lodash'),
+    define = require('./define'),
+    transform = require('./transform'),
+    binary = require('./binary');
 
 module.exports = {
-  define : require('./define'),
-  defined : require('./define').d,
+  define : define,
+  defined : define.d,
   or : require('./or'),
   and : require('./and'),
   with : require('./with'),
-  regexp : require('./regexp')
+  regexp : require('./regexp'),
+  size : transform('size', 0),
+  first : transform('first', 0),
+  last : transform('last', 0),
+  nth : transform('nth', 1),
+  ceil : transform('ceil', 0),
+  floor : transform('floor', 0),
+  max : transform('max', 0),
+  mean : transform('mean', 0),
+  min : transform('min', 0),
+  sum : transform('sum', 0),
+  eq : binary('eq'),
+  lt : binary('lt'),
+  lte : binary('lte'),
+  gt : binary('gt'),
+  gte : binary('gte')
 };
-_.each(['size', 'first', 'last', 'ceil', 'floor', 'max', 'mean', 'min', 'sum'], function (unary) {
-  module.exports[unary] = require('./unary')(unary);
-});
-_.each(['eq', 'lt', 'lte', 'gt', 'gte'], function (op) {
-  module.exports[op] = require('./binary')(op);
-});

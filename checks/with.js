@@ -14,20 +14,20 @@ module.exports = function (whats) {
     }
     return this.and(as.check({
       matches : function (value, status) {
-        return _.every(keys(value), _.bind(function (k) {
+        return _.every(keys(value), function (k) {
           return what(k).matches(value[k], status, k);
-        }, this));
+        });
       },
       cast : function (value, status) {
-        return _.reduce(keys(value), _.bind(function (value, k) {
+        return _.reduce(keys(value), function (value, k) {
           var casted = what(k).cast(value[k], status, k);
           return _.isUndefined(casted) ? _.unset(value, k) && value : _.set(value, k, casted);
-        }, this), value);
+        }, value);
       },
       validate : function (value, status) {
-        _.each(keys(value), _.bind(function (k) {
+        _.each(keys(value), function (k) {
           what(k).validate(value[k], status, k);
-        }, this));
+        });
         return value;
       }
     }));

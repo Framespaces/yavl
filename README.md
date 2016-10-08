@@ -40,7 +40,7 @@ as(schema).validate({
 - [objects](#-objects)
 - [arrays](#-arrays)
 - [operators](#-operators)
-- [aggregations](#-aggregations)
+- [transformations](#-transformations)
 - [definitions](#-definitions)
 - [functions](#-functions)
 - [getting feedback](#-getting-feedback)
@@ -179,26 +179,43 @@ as.regexp(/a/).matches('a');
 as(/a/).matches('a');
 ```
 
-## ✓ aggregations
-Objects and arrays can be aggregated with `size`, `first`, `last`, `ceil`, `floor`, `max`, `mean`, `min` and `sum`.
+## ✓ transformations
+Objects and arrays can be transformed with `size`, `first`, `last`, `nth`, `ceil`, `floor`, `max`, `mean`, `min` and `sum`.
 ```javascript
 as.size(1).matches([1]);
 as.first(1).matches([1, 2]);
 ```
-The arguments in an aggregation function are actually a schema. So:
+Additional arguments in an aggregation function are actually a schema. So:
 ```javascript
 as.size(1, 2).matches(['a']); // Is shorthand for...
 as.size(as.eq(1).or(2)).matches(['a']);
 as.size(1, 2).matches(['a', 'b']);
 as.size(1, 2).matches(['a', 'b', 'c']) === false;
 ```
+When using `cast` and `validate`, the output of the transformation depends on whether you provided
+schema arguments. If you did not, the output is the result of the transformation.
+```javascript
+as.size().cast(['a']) === 1;
+```
+But if you did, the result is an attempt to cast the contents of the input to suit. This only works
+for `size`, `first`, `last`, and `nth`.
+```javascript
+as.size(2).cast(['a']).length === 2;
+as.first(1).cast([0, 2]); // => [1, 2]
+```
+These behaviours can be useful in complex casts, like extracting typed information from a regex:
+```javascript
+as(/([0-9\.]+)(\w{2})/).nth(1).and(Number).cast('12.3px') === 12.3;
+as(/([0-9\.]+)(\w{2})/).nth(1, Number).cast('12.3px'); // => ['12.3px', 12.3, 'px']
+```
 
 ## ✓ definitions
-Sometimes you want to define something for later.
+Sometimes you want to define something for later. `define` creates a definition (without applying it),
+and `defined` applies something previously defined.
 ```javascript
 as.define('number', Number).defined('number').matches(1); // Not a particularly useful example
 ```
-This is especially useful in recursion. Note that using `defined` with more than one argument will
+This is useful in recursion. Note that using `defined` with more than one argument will
 both create and apply the definition.
 ```javascript
 assert.isTrue(as.defined('group', {

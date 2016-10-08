@@ -108,5 +108,11 @@ describe('yavl arrays', function () {
       assert.deepEqual(as.first(1).validate([1, 2]), [1, 2]);
       assert.deepEqual(as.first().eq(1).validate([1, 2]), 1);
     });
+    it('should match the nth of an array', function () {
+      assert.isTrue(as.nth(1, as(1)).matches([0, 1, 2]));
+    });
+    it('should cast to the nth of an array', function () {
+      assert.equal(as.nth(1).cast([0, 1, 2]), 1);
+    });
   });
 });

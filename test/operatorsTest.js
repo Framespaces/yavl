@@ -84,5 +84,12 @@ describe('yavl operators', function () {
     it('should not validate not matching things', function () {
       assert.throws(_.partial(as.regexp(/a/).validate, 'b'), TypeError);
     });
+    it('should cast a regex match', function () {
+      assert.equal(as(/([0-9\.]+)(\w{2})/).nth(1).and(Number).cast('12.3px'), 12.3);
+      var casted = as(/([0-9\.]+)(\w{2})/).nth(1, Number).cast('12.3px');
+      assert.equal(casted[0], '12.3px');
+      assert.equal(casted[1], 12.3);
+      assert.equal(casted[2], 'px');
+    });
   })
 });

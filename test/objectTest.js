@@ -48,6 +48,9 @@ describe('yavl objects', function () {
       assert.isTrue(as({ a : Number, undefined : String }).matches({ a : 1, b : '2' }));
       assert.isFalse(as({ a : Number, undefined : Number }).matches({ a : 1, b : '2' }));
     });
+    it('should chain', function () {
+      assert.isTrue(as({ a : Number }).with({ b : Number }).matches({ a : 1, b : 2 }));
+    });
   });
   describe('casting', function () {
     it('should cast any object to itself longhand', function () {
@@ -70,6 +73,14 @@ describe('yavl objects', function () {
     it('should truncate to a fixed-keys object', function () {
       assert.deepEqual(as({ a : Number, b : Error }).cast({ a : 1 }), { a : 1 });
       assert.deepEqual(as({ a : Number, b : Error }).cast({ a : 1, b : 2 }), { a : 1 });
+    });
+    it('should not truncate to a flexi-keys object', function () {
+      assert.deepEqual(as({ a : Number }).cast({ a : 1 }), { a : 1 });
+      assert.deepEqual(as({ a : Number }).cast({ a : 1, b : 2 }), { a : 1, b : 2 });
+    });
+    it('should chain', function () {
+      assert.deepEqual(as({ a : Number }).with({ b : Number }).cast({ a : '1', b : '2' }), { a : 1, b : 2 });
+      assert.deepEqual(as({ a : Number }).with({ b : undefined }).cast({ a : '1', b : '2' }), { a : 1 });
     });
   });
   describe('validating', function () {
