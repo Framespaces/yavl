@@ -70,6 +70,7 @@ as.validate = _.identity;
 as.Status = function () {
   this.path = [];
   this.defs = {};
+  this.quality = 0;
   this.failures = [];
 }
 
@@ -83,11 +84,17 @@ as.Status.prototype.pop = function (count) {
   _.times(count, _.bind(this.path.pop, this.path));
 };
 
-as.Status.prototype.failed = function () {
+as.Status.prototype.succeeded = function (result) {
   var path = this.path.join('.');
-  if (!_.some(this.failures, _.method('startsWith', path))) {
-    this.failures.push(path);
+  if (result) {
+    this.quality++;
+  } else {
+    this.quality--;
+    if (!_.some(this.failures, _.method('startsWith', path))) {
+      this.failures.push(path);
+    }
   }
+console.log(path, this.quality);
   return path || 'any';
 };
 
@@ -111,7 +118,8 @@ as.check = function (check, name) {
       var count = status.push(name, _.slice(arguments, 2));
       try {
         var result = f(value, status);
-        return (m !== 'matches' || result) ? result : !status.failed();
+        status.succeeded(m !== 'matches' || result);
+        return result;
       } catch (err) {
         throw err.message ?
           _.set(err, 'message', err.message + ' at ' + status.failed()) : err;
