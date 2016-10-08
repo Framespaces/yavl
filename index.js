@@ -94,7 +94,6 @@ as.Status.prototype.succeeded = function (result) {
       this.failures.push(path);
     }
   }
-console.log(path, this.quality);
   return path || 'any';
 };
 
