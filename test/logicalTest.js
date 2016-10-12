@@ -34,10 +34,15 @@ describe('yavl logic operators', function () {
     it('should cast to the left argument if it matches', function () {
       assert.equal(as(Number).or(2).cast(1), 1);
     });
-    it('should cast to the right argument if the left does not match', function () {
-      assert.equal(as(String).or(2).cast(1), 2);
+    it('should validate against either argument', function () {
+      assert.equal(as(Number).or(2).validate(1), 1);
+      assert.equal(as(String).or(1).validate(1), 1);
     });
-    it('should cast to the best matching argument', function () {
+    it('should cast to a type in preference to undefined', function () {
+      assert.equal(as(Number).or(undefined).cast('1'), 1);
+      assert.equal(as(undefined).or(Number).cast('1'), 1);
+    });
+    it('should cast to the best matching object', function () {
       var good = { a : 1, b : 2, c : 3 }, okay = { a : 1, b : 3, c : 5 }, bad = { d : 10 };
       assert.deepEqual(as(good).or(okay).cast({ a : 1, b : 2 }), good);
       assert.deepEqual(as(okay).or(good).cast({ a : 1, b : 2 }), good);
@@ -48,10 +53,6 @@ describe('yavl logic operators', function () {
       assert.deepEqual(as(good).or(okay).or(bad).cast({ a : 1, b : 2 }), good);
       assert.deepEqual(as(bad).or(okay).or(good).cast({ a : 1, b : 2 }), good);
       assert.deepEqual(as(okay).or(bad).or(good).cast({ a : 1, b : 2 }), good);
-    });
-    it('should validate against either argument', function () {
-      assert.equal(as(Number).or(2).validate(1), 1);
-      assert.equal(as(String).or(1).validate(1), 1);
     });
   });
   describe('or (shorthand)', function () {

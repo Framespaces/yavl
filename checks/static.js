@@ -1,7 +1,7 @@
 var _ = require('lodash'),
     as = require('../index');
 
-module.exports = function (name, matches, cast, error) {
+module.exports = function (name, matches, cast, error, weight) {
   return as.check({
     matches : matches,
     cast : cast,
@@ -9,5 +9,5 @@ module.exports = function (name, matches, cast, error) {
       if (!matches(value)) throw new TypeError(error + ': ' + value);
       return value;
     }
-  }, name);
+  }, name, weight);
 };

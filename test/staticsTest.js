@@ -160,4 +160,38 @@ describe('yavl statics', function () {
       assert.throws(_.partial(as(JSON).validate, 1), TypeError);
     });
   });
+  describe('Constructor', function () {
+    function MyObject(n) {
+      this.n = n;
+    }
+    function MyOtherObject() {}
+    function MySubObject(n) {
+      MyObject.call(this, n);
+    }
+    MySubObject.prototype = Object.create(MyObject.prototype);
+    MySubObject.prototype.constructor = MySubObject;
+
+    it('should match an object of the exact type', function () {
+      assert.isTrue(as(MyObject).matches(new MyObject(1)));
+    });
+    it('should not match an object of the wrong type', function () {
+      assert.isFalse(as(MyObject).matches(new MyOtherObject()));
+    });
+    it('should match an object of a sub type', function () {
+      assert.isTrue(as(MyObject).matches(new MySubObject(1)));
+    });
+    it('should cast by passing to the constructor', function () {
+      var casted = as(MyObject).cast(1);
+      assert.instanceOf(casted, MyObject);
+      assert.equal(casted.n, 1);
+    });
+    it('should not cast an object of a sub type', function () {
+      var casted = as(MyObject).cast(new MySubObject(1));
+      assert.instanceOf(casted, MySubObject);
+      assert.equal(casted.n, 1);
+    });
+    it('should not validate a number', function () {
+      assert.throws(_.partial(as(MyObject).validate, 1), TypeError);
+    });
+  });
 });

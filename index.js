@@ -35,6 +35,8 @@ function as1(what) {
       return as.array.with(what);
     } else if (_.isRegExp(what)) {
       return as.regexp(what);
+    } else if (_.isFunction(what)) {
+      return what.__isChecker ? what : as.instanceof(what);
     } else if (_.isObject(what)) {
       return what.__isChecker ? what : as.object.with(what);
     } else {
@@ -48,11 +50,11 @@ function as1(what) {
  * @param a function to indirectly create a checker method
  * @return a checker with its methods implemented accordingly
  */
-as.indirect = function (method) {
+as.indirect = function (getMethod) {
   return {
-    matches : method('matches'),
-    cast : method('cast'),
-    validate : method('validate')
+    matches : getMethod('matches'),
+    cast : getMethod('cast'),
+    validate : getMethod('validate')
   };
 }
 
@@ -84,12 +86,13 @@ as.Status.prototype.pop = function (count) {
   _.times(count, _.bind(this.path.pop, this.path));
 };
 
-as.Status.prototype.succeeded = function (result) {
+as.Status.prototype.succeeded = function (result, weight) {
+  weight = _.isUndefined(weight) ? 1 : weight;
   var path = this.path.join('.');
   if (result) {
-    this.quality++;
+    this.quality += weight;
   } else {
-    this.quality--;
+    this.quality -= weight;
     if (!_.some(this.failures, _.method('startsWith', path))) {
       this.failures.push(path);
     }
@@ -105,19 +108,19 @@ var checks = require('./checks');
  * with status handling and chaining methods. This function can be used in-line during data type
  * creation, or as a utility when extending as.
  */
-as.check = function (check, name) {
+as.check = function (check, name, weight) {
   // Entirely excusable sleight of hand to allow custom checkers
   check.__isChecker = true;
   check.name = name;
 
-  return _.assign(check, as.indirect(function bindStatus(m) {
-    var f = check[m];
+  return _.assign(check, as.indirect(function bindStatus(methodName) {
+    var method = check[methodName];
     return function (value, status, key/*, ...*/) {
       status || (status = new as.Status());
       var count = status.push(name, _.slice(arguments, 2));
       try {
-        var result = f(value, status);
-        status.succeeded(m !== 'matches' || result);
+        var result = method(value, status);
+        status.succeeded(methodName !== 'matches' || result, weight);
         return result;
       } catch (err) {
         throw err.message ?
@@ -141,26 +144,28 @@ function isJson(value) {
  * The static checker creation methods used to bootstrap a new data type declaration.
  * NOTE deferred initialisation due to circular dependencies
  */
-var staticCheck = require('./checks/static'), functionCheck = require('./checks/function');
+var staticCheck = require('./checks/static');
+var TYPE_WEIGHT = 0.5; // Type checking is a weak check compared to, say, equality
 var statics = {
   error : staticCheck('error', _.isUndefined, _.constant(undefined), 'Not allowed'),
-  object : staticCheck('object', _.isObject, Object, 'Not an object'),
-  array : staticCheck('array', _.isArray, _.castArray, 'Not an array'),
-  boolean : staticCheck('boolean', _.isBoolean, Boolean, 'Not a boolean'),
+  object : staticCheck('object', _.isObject, Object, 'Not an object', TYPE_WEIGHT),
+  array : staticCheck('array', _.isArray, _.castArray, 'Not an array', TYPE_WEIGHT),
+  boolean : staticCheck('boolean', _.isBoolean, Boolean, 'Not a boolean', TYPE_WEIGHT),
   string : staticCheck('string', _.isString, function (value) {
     // Stringification of null and undefined is not pleasant
     return _.isUndefined(value) || _.isNull(value) ? '' : String(value);
-  }, 'Not a string'),
-  number : staticCheck('number', _.isNumber, Number, 'Not a number'),
-  function : functionCheck,
+  }, 'Not a string', TYPE_WEIGHT),
+  number : staticCheck('number', _.isNumber, Number, 'Not a number', TYPE_WEIGHT),
   date : staticCheck('date', _.isDate, function (value) {
     // The Date constructor is not idempotent
     return _.isDate(value) ? value : new Date(value);
-  }, 'Not a date'),
+  }, 'Not a date', TYPE_WEIGHT),
   json : staticCheck('json', isJson, function (value) {
     // JSON.stringify is not idempotent
     return isJson(value) ? value : JSON.stringify(value);
-  }, 'Not JSON')
+  }, 'Not JSON', TYPE_WEIGHT),
+  function : require('./checks/function'),
+  instanceof : require('./checks/instanceof')
 };
 as = _.assign(as, statics);
 
@@ -173,6 +178,6 @@ as.extend = function (customChecks) {
 };
 
 /**
- * The as function itself is a checker
+ * The as function itself is a checker (with no weight)
  */
-as.check(as);
+as.check(as, null, 0);

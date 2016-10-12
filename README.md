@@ -33,20 +33,21 @@ as(schema).validate({
 
 ## [<img src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png" width="40" height="40" /> feedback and contributions welcome](https://github.com/Framespaces/yavl/issues)
 
-- [let's get crazy](#-lets-get-crazy)
-- [basically](#-basically)
-- [types](#-types)
-- [literals and logic](#-literals-and-logic)
-- [objects](#-objects)
-- [arrays](#-arrays)
-- [operators](#-operators)
-- [transformations](#-transformations)
-- [definitions](#-definitions)
-- [functions](#-functions)
-- [getting feedback](#-getting-feedback)
-- [alternatives](#-alternatives)
+- [let's get crazy](#lets-get-crazy)
+- [basically](#basically)
+- [types](#types)
+- [literals and logic](#literals-and-logic)
+- [objects](#objects)
+- [arrays](#arrays)
+- [operators](#operators)
+- [transformations](#transformations)
+- [definitions](#definitions)
+- [classes](#classes)
+- [functions](#functions)
+- [getting feedback](#getting-feedback)
+- [alternatives](#alternatives)
 
-## ✓ let's get crazy
+## let's get crazy
 ```javascript
 as({
   id : /^[a-f0-9]{32}$/,
@@ -70,7 +71,7 @@ as({
 }); // => true
 ```
 
-## ✓ basically
+## basically
 The function returned from `require('yavl')` (we'll label it `as` from now on) transforms a _schema_ into a _checker_ for that schema. A checker has the three methods we've seen above:
 * `matches(value)` returns `true` if the value matches the schema
 * `cast(value)` does its best to cast the value to something matching the schema
@@ -78,7 +79,7 @@ The function returned from `require('yavl')` (we'll label it `as` from now on) t
 
 Schemas can be hashes (as above), arrays, or a selection of JavaScript global objects representing basic types. Once a schema is established, it can be refined with chained, nested or branched operators and filters. Sounds complicated? It isn't. Let's dive in.
 
-## ✓ types
+## types
 ```javascript
 as(Number).matches(1);
 as(String).matches('1');
@@ -98,7 +99,7 @@ The `as` function itself matches anything. This is useful for constructs like '.
 as.matches(1) && as.matches('1') && as.matches({}) && as.matches(undefined)
 ```
 
-## ✓ literals and logic
+## literals and logic
 ```javascript
 as('woah').matches('woah');
 as(String).and('woah').matches('woah');
@@ -106,7 +107,7 @@ as('woah').or('dude').matches('woah');
 as('woah', 'dude').matches('woah'); // shorthand for the above
 ```
 
-## ✓ objects
+## objects
 Objects are strict about their declared keys.
 ```javascript
 as({ a : Number }).matches({}) === false;
@@ -130,7 +131,7 @@ So you can prevent additional keys using `Error`.
 as({ undefined : Error }).matches({ a : 1 }) === false;
 ```
 
-## ✓ arrays
+## arrays
 An empty array is a shortcut for (any) `Array`.
 ```javascript
 as([]).matches([]);
@@ -162,7 +163,7 @@ You can prevent additional keys entirely using `Error`.
 as([Number, Error]).matches([1, 2]) === false;
 ```
 
-## ✓ operators
+## operators
 We've met equality already, with literals. These are actually a shorthand:
 ```javascript
 as('woah').matches('woah');
@@ -179,7 +180,7 @@ as.regexp(/a/).matches('a');
 as(/a/).matches('a');
 ```
 
-## ✓ transformations
+## transformations
 Objects and arrays can be transformed with `size`, `first`, `last`, `nth`, `ceil`, `floor`, `max`, `mean`, `min` and `sum`.
 ```javascript
 as.size(1).matches([1]);
@@ -209,7 +210,7 @@ as(/([0-9\.]+)(\w{2})/).nth(1).and(Number).cast('12.3px') === 12.3;
 as(/([0-9\.]+)(\w{2})/).nth(1, Number).cast('12.3px'); // => ['12.3px', 12.3, 'px']
 ```
 
-## ✓ definitions
+## definitions
 Sometimes you want to define something for later. `define` creates a definition (without applying it),
 and `defined` applies something previously defined.
 ```javascript
@@ -225,7 +226,19 @@ assert.isTrue(as.defined('group', {
 })); // That's better
 ```
 
-## ✓ functions
+## classes
+```javascript
+function MyObject() {}
+as(MyObject).matches(new MyObject());
+```
+This is an `instanceof` check and so works with sub-classes.
+Casting to a class passes the value into the constructor:
+```javascript
+function MyObject(n) { this.n = n; }
+as(MyObject).cast(1).n === 1;
+```
+
+## functions
 You can check function parameters and return values using `as.function()` followed optionally by `returns`.
 However, since the checking only happens when you actually call the function, we need to use
 `cast` or `validate`. Casting will also cast the parameters if possible:
@@ -236,7 +249,7 @@ as.function(Number).returns(Number).validate(addOne)('1'); // throws TypeError (
 as.function(Number).returns(String).validate(addOne)(1); // throws TypeError (on the return value)
 ```
 
-## ✓ getting feedback
+## getting feedback
 An error thrown by validation will have a message which indicates where the failure happened. If you want to get feedback
 from a match, provide a second argument of object type `as.Status` to the function. The object
 will be populated with an array of failure locations.
@@ -246,7 +259,7 @@ as({ a : Number }).matches({ a : '1' }, status);
 // => status.failures is ['object.a.number']
 ```
 
-## ✓ alternatives
+## alternatives
 OK let's face it, sometimes you just need something that's been around for a while.
 
 https://www.npmjs.com/package/joi
