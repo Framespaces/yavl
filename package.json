@@ -1,6 +1,6 @@
 {
   "name": "yavl",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Yet Another Validation Language (for JavaScript)",
   "keywords": [
     "schema",

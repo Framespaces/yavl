@@ -13,5 +13,5 @@ module.exports = function (what/*, ...*/) {
     validate : function (value, status) {
       return right.validate(left.validate(value, status), status, left.name);
     }
-  });
+  }, null, 0); // Logical operator has no weight
 };

@@ -69,9 +69,9 @@ as.validate = _.identity;
  * Status reporting object. Pass a new one as the second argument to the cast method
  * to discover what went wrong with validation.
  */
-as.Status = function () {
+as.Status = function (defs) {
   this.path = [];
-  this.defs = {};
+  this.defs = defs || {};
   this.quality = 0;
   this.failures = [];
 }
@@ -124,7 +124,7 @@ as.check = function (check, name, weight) {
         return result;
       } catch (err) {
         throw err.message ?
-          _.set(err, 'message', err.message + ' at ' + status.failed()) : err;
+          _.set(err, 'message', err.message + ' at ' + status.succeeded(false, weight)) : err;
       } finally {
         status.pop(count);
       }

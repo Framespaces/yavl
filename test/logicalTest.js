@@ -42,17 +42,31 @@ describe('yavl logic operators', function () {
       assert.equal(as(Number).or(undefined).cast('1'), 1);
       assert.equal(as(undefined).or(Number).cast('1'), 1);
     });
-    it('should cast to the best matching object', function () {
-      var good = { a : 1, b : 2, c : 3 }, okay = { a : 1, b : 3, c : 5 }, bad = { d : 10 };
+    it('should cast to the best matching object of two', function () {
+      var good = { a : 1, b : 2, c : 3 }, okay = { a : 1, b : 3, c : 5 };
       assert.deepEqual(as(good).or(okay).cast({ a : 1, b : 2 }), good);
       assert.deepEqual(as(okay).or(good).cast({ a : 1, b : 2 }), good);
       assert.deepEqual(as(good).or(okay).cast({ a : 1, c : 3 }), good);
       assert.deepEqual(as(okay).or(good).cast({ a : 1, c : 3 }), good);
       assert.deepEqual(as(good).or(okay).cast({ b : 2, c : 3 }), good);
       assert.deepEqual(as(okay).or(good).cast({ b : 2, c : 3 }), good);
+    });
+    it('should cast to the best matching object of three', function () {
+      var good = { a : 1, b : 2, c : 3 }, okay = { a : 1, b : 3, c : 5 }, bad = { d : 10 };
       assert.deepEqual(as(good).or(okay).or(bad).cast({ a : 1, b : 2 }), good);
       assert.deepEqual(as(bad).or(okay).or(good).cast({ a : 1, b : 2 }), good);
       assert.deepEqual(as(okay).or(bad).or(good).cast({ a : 1, b : 2 }), good);
+    });
+    it('should cast to a matching defined object of two', function () {
+      var good = { a : 1, b : 2, c : 3 }, okay = { a : 1, b : 3, c : 5 };
+      assert.deepEqual(as(good).or(undefined).cast({ a : 1, b : 2 }), good);
+      assert.deepEqual(as(undefined).or(good).cast({ a : 1, b : 2 }), good);
+    });
+    it('should cast to a matching defined object of three', function () {
+      var good = { a : 1, b : 2, c : 3 }, okay = { a : 1, b : 3, c : 5 };
+      assert.deepEqual(as(good).or(okay).or(undefined).cast({ a : 1, b : 2 }), good);
+      assert.deepEqual(as(undefined).or(okay).or(good).cast({ a : 1, b : 2 }), good);
+      assert.deepEqual(as(okay).or(undefined).or(good).cast({ a : 1, b : 2 }), good);
     });
   });
   describe('or (shorthand)', function () {
