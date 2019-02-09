@@ -1,6 +1,6 @@
 {
   "name": "yavl",
-  "version": "0.0.7",
+  "version": "0.1.0",
   "description": "Yet Another Validation Language (for JavaScript)",
   "keywords": [
     "schema",
@@ -13,14 +13,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Framespaces/yavl.git"
+    "url": "git+https://github.com/gsvarovsky/yavl.git"
   },
-  "author": "dev@framespaces.com",
+  "author": "George Svarovsky",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Framespaces/yavl/issues"
+    "url": "https://github.com/gsvarovsky/yavl/issues"
   },
-  "homepage": "https://github.com/Framespaces/yavl#readme",
+  "homepage": "https://github.com/gsvarovsky/yavl#readme",
   "dependencies": {
     "lodash": "^4.16.0"
   },
