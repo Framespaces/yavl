@@ -1,7 +1,6 @@
 # **yavl**_!_
 
-[![Build Status](https://travis-ci.org/Framespaces/yavl.svg?branch=master)](https://travis-ci.org/Framespaces/yavl)
-[![Code Climate](https://codeclimate.com/github/Framespaces/yavl/badges/gpa.svg)](https://codeclimate.com/github/Framespaces/yavl)
+[![Build Status](https://travis-ci.org/gsvarovsky/yavl.svg?branch=master)](https://travis-ci.org/gsvarovsky/yavl)
 
 Yet Another Validation Language (for JavaScript)
 
@@ -31,7 +30,7 @@ as(schema).validate({
 }); // => throws TypeError
 ```
 
-## [<img src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png" width="40" height="40" /> feedback and contributions welcome](https://github.com/Framespaces/yavl/issues)
+## [<img src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png" width="40" height="40" /> feedback and contributions welcome](https://github.com/gsvarovsky/yavl/issues)
 
 - [let's get crazy](#lets-get-crazy)
 - [basically](#basically)

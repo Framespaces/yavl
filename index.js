@@ -3,7 +3,7 @@ var _ = require('lodash');
 /**
  * Main entry point for schema interpretation into a checker.
  * Each passed argument represents a data type, which are logically OR-ed.
- * @see https://github.com/Framespaces/yavl for the available data types and checker methods.
+ * @see https://github.com/gsvarovsky/yavl for the available data types and checker methods.
  * @param what... the data types
  * @return an interpreted schema checker with the methods: matches, cast and validate
  */
